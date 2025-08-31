@@ -5,6 +5,13 @@ Ultralytics Results, Boxes and Masks classes for handling inference results
 Usage: See https://docs.ultralytics.com/modes/predict/
 """
 
+import os
+import sys
+
+# Add the project root to the Python path
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, project_root)
+
 from copy import deepcopy
 from functools import lru_cache
 from pathlib import Path
@@ -12,9 +19,9 @@ from pathlib import Path
 import numpy as np
 import torch
 
-from ...yolo.data.augment import LetterBox
-from ...yolo.utils import LOGGER, SimpleClass, deprecation_warn, ops
-from ...yolo.utils.plotting import Annotator, colors, save_one_box
+from yolo.data.augment import LetterBox
+from yolo.utils import LOGGER, SimpleClass, deprecation_warn, ops
+from yolo.utils.plotting import Annotator, colors, save_one_box
 
 
 class BaseTensor(SimpleClass):

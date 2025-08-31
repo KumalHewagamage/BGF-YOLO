@@ -1,5 +1,12 @@
 # Ultralytics YOLO 🚀, AGPL-3.0 license
 
+import os
+import sys
+
+# Add the project root to the Python path
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, project_root)
+
 import contextlib
 import math
 import re
@@ -11,7 +18,7 @@ import torch
 import torch.nn.functional as F
 import torchvision
 
-from ...yolo.utils import LOGGER
+from yolo.utils import LOGGER
 
 from .metrics import box_iou
 

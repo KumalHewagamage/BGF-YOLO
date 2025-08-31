@@ -1,6 +1,13 @@
 # Ultralytics YOLO 🚀, AGPL-3.0 license
 
 import os
+import sys
+
+# Add the project root to the Python path
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, project_root)
+
+import os
 import random
 from pathlib import Path
 
@@ -9,10 +16,10 @@ import torch
 from PIL import Image
 from torch.utils.data import dataloader, distributed
 
-from ...yolo.data.dataloaders.stream_loaders import (LOADERS, LoadImages, LoadPilAndNumpy, LoadScreenshots,
+from yolo.data.dataloaders.stream_loaders import (LOADERS, LoadImages, LoadPilAndNumpy, LoadScreenshots,
                                                               LoadStreams, LoadTensor, SourceTypes, autocast_list)
-from ...yolo.data.utils import IMG_FORMATS, VID_FORMATS
-from ...yolo.utils.checks import check_file
+from yolo.data.utils import IMG_FORMATS, VID_FORMATS
+from yolo.utils.checks import check_file
 
 from ..utils import RANK, colorstr
 from .dataset import YOLODataset

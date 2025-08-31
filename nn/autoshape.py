@@ -3,6 +3,13 @@
 Common modules
 """
 
+import os
+import sys
+
+# Add the project root to the Python path
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, project_root)
+
 from copy import copy
 from pathlib import Path
 
@@ -14,13 +21,13 @@ import torch.nn as nn
 from PIL import Image, ImageOps
 from torch.cuda import amp
 
-from ...nn.autobackend import AutoBackend
-from ...yolo.data.augment import LetterBox
-from ...yolo.utils import LOGGER, colorstr
-from ...yolo.utils.files import increment_path
-from ...yolo.utils.ops import Profile, make_divisible, non_max_suppression, scale_boxes, xyxy2xywh
-from ...yolo.utils.plotting import Annotator, colors, save_one_box
-from ...yolo.utils.torch_utils import copy_attr, smart_inference_mode
+from nn.autobackend import AutoBackend
+from yolo.data.augment import LetterBox
+from yolo.utils import LOGGER, colorstr
+from yolo.utils.files import increment_path
+from yolo.utils.ops import Profile, make_divisible, non_max_suppression, scale_boxes, xyxy2xywh
+from yolo.utils.plotting import Annotator, colors, save_one_box
+from yolo.utils.torch_utils import copy_attr, smart_inference_mode
 
 
 class AutoShape(nn.Module):

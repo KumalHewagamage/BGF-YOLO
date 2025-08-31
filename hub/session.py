@@ -1,4 +1,11 @@
 # Ultralytics YOLO 🚀, AGPL-3.0 license
+import os
+import sys
+
+# Add the project root to the Python path
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, project_root)
+
 import signal
 import sys
 from pathlib import Path
@@ -6,9 +13,9 @@ from time import sleep
 
 import requests
 
-from ...hub.utils import HUB_API_ROOT, PREFIX, smart_request
-from ...yolo.utils import LOGGER, __version__, checks, emojis, is_colab, threaded
-from ...yolo.utils.errors import HUBModelError
+from hub.utils import HUB_API_ROOT, PREFIX, smart_request
+from yolo.utils import LOGGER, __version__, checks, emojis, is_colab, threaded
+from yolo.utils.errors import HUBModelError
 
 AGENT_NAME = f'python-{__version__}-colab' if is_colab() else f'python-{__version__}-local'
 
@@ -46,7 +53,7 @@ class HUBTrainingSession:
             ConnectionError: If connecting with global API key is not supported.
         """
 
-        from ...hub.auth import Auth
+        from hub.auth import Auth
 
         # Parse input
         if url.startswith('https://hub.ultralytics.com/models/'):

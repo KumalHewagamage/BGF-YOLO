@@ -3,6 +3,13 @@
 Image augmentation functions
 """
 
+import os
+import sys
+
+# Add the project root to the Python path
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.insert(0, project_root)
+
 import math
 import random
 
@@ -12,10 +19,10 @@ import torch
 import torchvision.transforms as T
 import torchvision.transforms.functional as TF
 
-from ...yolo.utils import LOGGER, colorstr
-from ...yolo.utils.checks import check_version
-from ...yolo.utils.metrics import bbox_ioa
-from ...yolo.utils.ops import resample_segments, segment2box, xywhn2xyxy
+from yolo.utils import LOGGER, colorstr
+from yolo.utils.checks import check_version
+from yolo.utils.metrics import bbox_ioa
+from yolo.utils.ops import resample_segments, segment2box, xywhn2xyxy
 
 IMAGENET_MEAN = 0.485, 0.456, 0.406  # RGB mean
 IMAGENET_STD = 0.229, 0.224, 0.225  # RGB standard deviation

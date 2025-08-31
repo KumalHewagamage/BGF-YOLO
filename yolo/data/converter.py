@@ -1,3 +1,10 @@
+import os
+import sys
+
+# Add the project root to the Python path
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, project_root)
+
 import json
 from collections import defaultdict
 from pathlib import Path
@@ -6,8 +13,8 @@ import cv2
 import numpy as np
 from tqdm import tqdm
 
-from ...yolo.utils.checks import check_requirements
-from ...yolo.utils.files import make_dirs
+from yolo.utils.checks import check_requirements
+from yolo.utils.files import make_dirs
 
 
 def coco91_to_coco80_class():

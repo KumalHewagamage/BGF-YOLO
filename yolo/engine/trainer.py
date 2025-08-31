@@ -6,6 +6,13 @@ Usage:
     $ yolo mode=train model=yolov8n.pt data=coco128.yaml imgsz=640 epochs=100 batch=16
 """
 import os
+import sys
+
+# Add the project root to the Python path
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, project_root)
+
+import os
 import subprocess
 import time
 from copy import deepcopy
@@ -21,16 +28,16 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.optim import lr_scheduler
 from tqdm import tqdm
 
-from ...nn.tasks import attempt_load_one_weight, attempt_load_weights
-from ...yolo.cfg import get_cfg
-from ...yolo.data.utils import check_cls_dataset, check_det_dataset
-from ...yolo.utils import (DEFAULT_CFG, LOGGER, ONLINE, RANK, ROOT, SETTINGS, TQDM_BAR_FORMAT, __version__,
+from nn.tasks import attempt_load_one_weight, attempt_load_weights
+from yolo.cfg import get_cfg
+from yolo.data.utils import check_cls_dataset, check_det_dataset
+from yolo.utils import (DEFAULT_CFG, LOGGER, ONLINE, RANK, ROOT, SETTINGS, TQDM_BAR_FORMAT, __version__,
                                     callbacks, clean_url, colorstr, emojis, yaml_save)
-from ...yolo.utils.autobatch import check_train_batch_size
-from ...yolo.utils.checks import check_file, check_imgsz, print_args
-from ...yolo.utils.dist import ddp_cleanup, generate_ddp_command
-from ...yolo.utils.files import get_latest_run, increment_path
-from ...yolo.utils.torch_utils import (EarlyStopping, ModelEMA, de_parallel, init_seeds, one_cycle,
+from yolo.utils.autobatch import check_train_batch_size
+from yolo.utils.checks import check_file, check_imgsz, print_args
+from yolo.utils.dist import ddp_cleanup, generate_ddp_command
+from yolo.utils.files import get_latest_run, increment_path
+from yolo.utils.torch_utils import (EarlyStopping, ModelEMA, de_parallel, init_seeds, one_cycle,
                                                 select_device, strip_optimizer)
 
 

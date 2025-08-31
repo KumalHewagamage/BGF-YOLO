@@ -3,13 +3,20 @@
 Functions for estimating the best YOLO batch size to use a fraction of the available CUDA memory in PyTorch.
 """
 
+import os
+import sys
+
+# Add the project root to the Python path
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, project_root)
+
 from copy import deepcopy
 
 import numpy as np
 import torch
 
-from ...yolo.utils import LOGGER, colorstr
-from ...yolo.utils.torch_utils import profile
+from yolo.utils import LOGGER, colorstr
+from yolo.utils.torch_utils import profile
 
 
 def check_train_batch_size(model, imgsz=640, amp=True):

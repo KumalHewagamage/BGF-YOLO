@@ -1,5 +1,12 @@
 # Ultralytics YOLO 🚀, AGPL-3.0 license
 
+import os
+import sys
+
+# Add the project root to the Python path
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, project_root)
+
 import math
 import os
 import platform
@@ -17,8 +24,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torchvision
 
-from ...yolo.utils import DEFAULT_CFG_DICT, DEFAULT_CFG_KEYS, LOGGER, RANK, __version__
-from ...yolo.utils.checks import check_version
+from yolo.utils import DEFAULT_CFG_DICT, DEFAULT_CFG_KEYS, LOGGER, RANK, __version__
+from yolo.utils.checks import check_version
 
 try:
     import thop
@@ -352,7 +359,7 @@ def strip_optimizer(f: Union[str, Path] = 'best.pt', s: str = '') -> None:
 
     Usage:
         from pathlib import Path
-        from ...yolo.utils.torch_utils import strip_optimizer
+        from yolo.utils.torch_utils import strip_optimizer
         for f in Path('/Users/glennjocher/Downloads/weights').rglob('*.pt'):
             strip_optimizer(f)
     """

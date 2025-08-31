@@ -1,6 +1,6 @@
-train: D://Br35H/TRAIN/
-val: D://Br35H/VAL/
-test: D://Br35H/TEST/
+train: /home/avishka/Kumal/BGF-YOLO/Br35H/TRAIN/
+val: /home/avishka/Kumal/BGF-YOLO/Br35H/VAL/
+test: /home/avishka/Kumal/BGF-YOLO/Br35H/TEST/
 
 nc: 1
 names: ['Brain tumor']

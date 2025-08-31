@@ -1,5 +1,12 @@
 # Ultralytics YOLO 🚀, AGPL-3.0 license
 
+import os
+import sys
+
+# Add the project root to the Python path
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, project_root)
+
 import contextlib
 import hashlib
 import json
@@ -16,12 +23,12 @@ import numpy as np
 from PIL import ExifTags, Image, ImageOps
 from tqdm import tqdm
 
-from ...nn.autobackend import check_class_names
-from ...yolo.utils import (DATASETS_DIR, LOGGER, NUM_THREADS, ROOT, SETTINGS_YAML, clean_url, colorstr, emojis,
+from nn.autobackend import check_class_names
+from yolo.utils import (DATASETS_DIR, LOGGER, NUM_THREADS, ROOT, SETTINGS_YAML, clean_url, colorstr, emojis,
                                     yaml_load)
-from ...yolo.utils.checks import check_file, check_font, is_ascii
-from ...yolo.utils.downloads import download, safe_download, unzip_file
-from ...yolo.utils.ops import segments2boxes
+from yolo.utils.checks import check_file, check_font, is_ascii
+from yolo.utils.downloads import download, safe_download, unzip_file
+from yolo.utils.ops import segments2boxes
 
 HELP_URL = 'See https://docs.ultralytics.com/yolov5/tutorials/train_custom_data'
 IMG_FORMATS = 'bmp', 'dng', 'jpeg', 'jpg', 'mpo', 'png', 'tif', 'tiff', 'webp', 'pfm'  # image suffixes
@@ -320,7 +327,7 @@ class HUBDatasetStats():
         autodownload:   Attempt to download dataset if not found locally
 
     Usage
-        from ...yolo.data.utils import HUBDatasetStats
+        from yolo.data.utils import HUBDatasetStats
         stats = HUBDatasetStats('/Users/glennjocher/Downloads/coco8.zip', task='detect')  # detect dataset
         stats = HUBDatasetStats('/Users/glennjocher/Downloads/coco8-seg.zip', task='segment')  # segment dataset
         stats = HUBDatasetStats('/Users/glennjocher/Downloads/coco8-pose.zip', task='pose')  # pose dataset
@@ -373,7 +380,7 @@ class HUBDatasetStats():
 
     def get_json(self, save=False, verbose=False):
         """Return dataset JSON for Ultralytics HUB."""
-        from ...yolo.data import YOLODataset  # ClassificationDataset
+        from yolo.data import YOLODataset  # ClassificationDataset
 
         def _round(labels):
             """Update labels to integer class and 4 decimal place floats."""
@@ -424,7 +431,7 @@ class HUBDatasetStats():
 
     def process_images(self):
         """Compress images for Ultralytics HUB."""
-        from ...yolo.data import YOLODataset  # ClassificationDataset
+        from yolo.data import YOLODataset  # ClassificationDataset
 
         for split in 'train', 'val', 'test':
             if self.data.get(split) is None:
@@ -451,7 +458,7 @@ def compress_one_image(f, f_new=None, max_dim=1920, quality=50):
 
     Usage:
         from pathlib import Path
-        from ...yolo.data.utils import compress_one_image
+        from yolo.data.utils import compress_one_image
         for f in Path('/Users/glennjocher/Downloads/dataset').rglob('*.jpg'):
             compress_one_image(f)
     """
@@ -479,7 +486,7 @@ def delete_dsstore(path):
         path (str, optional): The directory path where the ".DS_store" files should be deleted.
 
     Usage:
-        from ...yolo.data.utils import delete_dsstore
+        from yolo.data.utils import delete_dsstore
         delete_dsstore('/Users/glennjocher/Downloads/dataset')
 
     Note:
@@ -502,7 +509,7 @@ def zip_directory(dir, use_zipfile_library=True):
         use_zipfile_library (bool): Whether to use zipfile library or shutil for zipping.
 
     Usage:
-        from ...yolo.data.utils import zip_directory
+        from yolo.data.utils import zip_directory
         zip_directory('/Users/glennjocher/Downloads/playground')
 
         zip -r coco8-pose.zip coco8-pose

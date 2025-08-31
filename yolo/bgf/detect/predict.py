@@ -1,10 +1,17 @@
 # BGF-YOLO based on Ultralytics YOLOv8x 8.0.109 object detection model with same license, AGPL-3.0 license
 
+import os
+import sys
+
+# Add the project root to the Python path
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.insert(0, project_root)
+
 import torch
 
-from ...yolo.engine.predictor import BasePredictor
-from ...yolo.engine.results import Results
-from ...yolo.utils import DEFAULT_CFG, ROOT, ops
+from yolo.engine.predictor import BasePredictor
+from yolo.engine.results import Results
+from yolo.utils import DEFAULT_CFG, ROOT, ops
 
 
 class DetectionPredictor(BasePredictor):

@@ -3,7 +3,14 @@
 Benchmark a YOLO model formats for speed and accuracy
 
 Usage:
-    from ...yolo.utils.benchmarks import ProfileModels, benchmark
+import os
+import sys
+
+# Add the project root to the Python path
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, project_root)
+
+    from yolo.utils.benchmarks import ProfileModels, benchmark
     ProfileModels(['yolov8n.yaml', 'yolov8s.yaml'])
     run_benchmarks(model='yolov8n.pt', imgsz=160)
 
@@ -33,12 +40,12 @@ import torch.cuda
 from tqdm import tqdm
 
 from .. import YOLO
-from ...yolo.engine.exporter import export_formats
-from ...yolo.utils import LINUX, LOGGER, MACOS, ROOT, SETTINGS
-from ...yolo.utils.checks import check_requirements, check_yolo
-from ...yolo.utils.downloads import download
-from ...yolo.utils.files import file_size
-from ...yolo.utils.torch_utils import select_device
+from yolo.engine.exporter import export_formats
+from yolo.utils import LINUX, LOGGER, MACOS, ROOT, SETTINGS
+from yolo.utils.checks import check_requirements, check_yolo
+from yolo.utils.downloads import download
+from yolo.utils.files import file_size
+from yolo.utils.torch_utils import select_device
 
 
 def benchmark(model=Path(SETTINGS['weights_dir']) / 'yolov8n.pt',

@@ -1,19 +1,26 @@
 # Ultralytics YOLO 🚀, AGPL-3.0 license
 
+import os
+import sys
+
+# Add the project root to the Python path
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, project_root)
+
 import sys
 from pathlib import Path
 from typing import Union
 
 from .. import yolo  # noqa
-from ...nn.tasks import (ClassificationModel, DetectionModel, PoseModel, SegmentationModel,
+from nn.tasks import (ClassificationModel, DetectionModel, PoseModel, SegmentationModel,
                                   attempt_load_one_weight, guess_model_task, nn, yaml_model_load)
-from ...yolo.cfg import get_cfg
-from ...yolo.engine.exporter import Exporter
-from ...yolo.utils import (DEFAULT_CFG, DEFAULT_CFG_DICT, DEFAULT_CFG_KEYS, LOGGER, RANK, ROOT, callbacks,
+from yolo.cfg import get_cfg
+from yolo.engine.exporter import Exporter
+from yolo.utils import (DEFAULT_CFG, DEFAULT_CFG_DICT, DEFAULT_CFG_KEYS, LOGGER, RANK, ROOT, callbacks,
                                     is_git_dir, yaml_load)
-from ...yolo.utils.checks import check_file, check_imgsz, check_pip_update_available, check_yaml
-from ...yolo.utils.downloads import GITHUB_ASSET_STEMS
-from ...yolo.utils.torch_utils import smart_inference_mode
+from yolo.utils.checks import check_file, check_imgsz, check_pip_update_available, check_yaml
+from yolo.utils.downloads import GITHUB_ASSET_STEMS
+from yolo.utils.torch_utils import smart_inference_mode
 
 # Map head to model, trainer, validator, and predictor classes
 TASK_MAP = {
@@ -93,7 +100,7 @@ class YOLO:
 
         # Check if Ultralytics HUB model from https://hub.ultralytics.com
         if self.is_hub_model(model):
-            from ...hub.session import HUBTrainingSession
+            from hub.session import HUBTrainingSession
             self.session = HUBTrainingSession(model)
             model = self.session.model_file
 
@@ -267,7 +274,7 @@ class YOLO:
 
         """
         if not hasattr(self.predictor, 'trackers'):
-            from ...tracker import register_tracker
+            from tracker import register_tracker
             register_tracker(self, persist)
         # ByteTrack-based method needs low confidence predictions as input
         conf = kwargs.get('conf') or 0.1
@@ -313,7 +320,7 @@ class YOLO:
             **kwargs : Any other args accepted by the validators. To see all args check 'configuration' section in docs
         """
         self._check_is_pytorch_model()
-        from ...yolo.utils.benchmarks import benchmark
+        from yolo.utils.benchmarks import benchmark
         overrides = self.model.args.copy()
         overrides.update(kwargs)
         overrides['mode'] = 'benchmark'
@@ -411,7 +418,7 @@ class YOLO:
         """
 
         try:
-            from ...yolo.utils.tuner import (ASHAScheduler, RunConfig, WandbLoggerCallback, default_space,
+            from yolo.utils.tuner import (ASHAScheduler, RunConfig, WandbLoggerCallback, default_space,
                                                       task_metric_map, tune)
         except ImportError:
             raise ModuleNotFoundError("Install Ray Tune: `pip install 'ray[tune]'`")

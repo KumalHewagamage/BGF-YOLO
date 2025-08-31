@@ -3,13 +3,20 @@
 Model head modules
 """
 
+import os
+import sys
+
+# Add the project root to the Python path
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, project_root)
+
 import math
 
 import torch
 import torch.nn as nn
 from torch.nn.init import constant_, xavier_uniform_
 
-from ...yolo.utils.tal import dist2bbox, make_anchors
+from yolo.utils.tal import dist2bbox, make_anchors
 
 from .block import DFL, Proto
 from .conv import Conv

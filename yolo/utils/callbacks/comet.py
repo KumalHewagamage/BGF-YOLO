@@ -1,9 +1,16 @@
 # Ultralytics YOLO 🚀, AGPL-3.0 license
 import os
+import sys
+
+# Add the project root to the Python path
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.insert(0, project_root)
+
+import os
 from pathlib import Path
 
-from ultralytics.yolo.utils import LOGGER, RANK, TESTS_RUNNING, ops
-from ultralytics.yolo.utils.torch_utils import get_flops, get_num_params
+from yolo.utils import LOGGER, RANK, TESTS_RUNNING, ops
+from yolo.utils.torch_utils import get_flops, get_num_params
 
 try:
     import comet_ml

@@ -1,5 +1,12 @@
 # Ultralytics YOLO 🚀, AGPL-3.0 license
 
+import os
+import sys
+
+# Add the project root to the Python path
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, project_root)
+
 import contextlib
 import math
 from pathlib import Path
@@ -12,7 +19,7 @@ from PIL import Image, ImageDraw, ImageFont
 from PIL import __version__ as pil_version
 from scipy.ndimage.filters import gaussian_filter1d
 
-from ...yolo.utils import LOGGER, TryExcept, plt_settings, threaded
+from yolo.utils import LOGGER, TryExcept, plt_settings, threaded
 
 from .checks import check_font, check_version, is_ascii
 from .files import increment_path

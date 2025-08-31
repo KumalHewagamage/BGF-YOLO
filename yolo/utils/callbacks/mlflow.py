@@ -1,10 +1,17 @@
 # Ultralytics YOLO 🚀, AGPL-3.0 license
 
 import os
+import sys
+
+# Add the project root to the Python path
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.insert(0, project_root)
+
+import os
 import re
 from pathlib import Path
 
-from ultralytics.yolo.utils import LOGGER, TESTS_RUNNING, colorstr
+from yolo.utils import LOGGER, TESTS_RUNNING, colorstr
 
 try:
     import mlflow

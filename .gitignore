@@ -1,0 +1,6 @@
+/Br35H
+/bgf_yolo.egg-info
+/runs
+
+#ignore all pycache files
+**/__pycache__/

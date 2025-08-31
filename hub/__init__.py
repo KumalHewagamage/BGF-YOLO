@@ -1,11 +1,18 @@
 # Ultralytics YOLO 🚀, AGPL-3.0 license
 
+import os
+import sys
+
+# Add the project root to the Python path
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, project_root)
+
 import requests
 
-from ...hub.auth import Auth
-from ...hub.utils import PREFIX
-from ...yolo.data.utils import HUBDatasetStats
-from ...yolo.utils import LOGGER, SETTINGS, USER_CONFIG_DIR, yaml_save
+from hub.auth import Auth
+from hub.utils import PREFIX
+from yolo.data.utils import HUBDatasetStats
+from yolo.utils import LOGGER, SETTINGS, USER_CONFIG_DIR, yaml_save
 
 
 def login(api_key=''):
@@ -65,7 +72,7 @@ def reset_model(model_id=''):
 
 def export_fmts_hub():
     """Returns a list of HUB-supported export formats."""
-    from ...yolo.engine.exporter import export_formats
+    from yolo.engine.exporter import export_formats
     return list(export_formats()['Argument'][1:]) + ['ultralytics_tflite', 'ultralytics_coreml']
 
 
@@ -100,7 +107,7 @@ def check_dataset(path='', task='detect'):
         task:           Dataset task. Options are 'detect', 'segment', 'pose', 'classify'.
 
     Usage
-        from ...hub import check_dataset
+        from hub import check_dataset
         check_dataset('path/to/coco8.zip', task='detect')  # detect dataset
         check_dataset('path/to/coco8-seg.zip', task='segment')  # segment dataset
         check_dataset('path/to/coco8-pose.zip', task='pose')  # pose dataset

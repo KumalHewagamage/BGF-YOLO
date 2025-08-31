@@ -1,4 +1,11 @@
 # Ultralytics YOLO 🚀, AGPL-3.0 license
+import os
+import sys
+
+# Add the project root to the Python path
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, project_root)
+
 import contextlib
 import re
 import shutil
@@ -8,7 +15,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import Dict, List, Union
 
-from ...yolo.utils import (DEFAULT_CFG, DEFAULT_CFG_DICT, DEFAULT_CFG_PATH, LOGGER, ROOT, USER_CONFIG_DIR,
+from yolo.utils import (DEFAULT_CFG, DEFAULT_CFG_DICT, DEFAULT_CFG_PATH, LOGGER, ROOT, USER_CONFIG_DIR,
                                     IterableSimpleNamespace, __version__, checks, colorstr, deprecation_warn,
                                     get_settings, yaml_load, yaml_print)
 
@@ -361,7 +368,7 @@ def entrypoint(debug=''):
     if model is None:
         model = 'yolov8n.pt'
         LOGGER.warning(f"WARNING ⚠️ 'model' is missing. Using default 'model={model}'.")
-    from ...yolo.engine.model import YOLO
+    from yolo.engine.model import YOLO
     overrides['model'] = model
     model = YOLO(model, task=task)
     if isinstance(overrides.get('pretrained'), str):

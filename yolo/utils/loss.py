@@ -1,16 +1,23 @@
 # Ultralytics YOLO 🚀, AGPL-3.0 license
 
+import os
+import sys
+
+# Add the project root to the Python path
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, project_root)
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from ...yolo.utils.metrics import OKS_SIGMA
-from ...yolo.utils.ops import crop_mask, xywh2xyxy, xyxy2xywh
-from ...yolo.utils.tal import TaskAlignedAssigner, dist2bbox, make_anchors
+from yolo.utils.metrics import OKS_SIGMA
+from yolo.utils.ops import crop_mask, xywh2xyxy, xyxy2xywh
+from yolo.utils.tal import TaskAlignedAssigner, dist2bbox, make_anchors
 
 from .metrics import bbox_iou
 from .tal import bbox2dist
-from ...yolo.utils.wiou import IoU_Cal
+from yolo.utils.wiou import IoU_Cal
 
 class VarifocalLoss(nn.Module):
     """Varifocal loss by Zhang et al. https://arxiv.org/abs/2008.13367."""

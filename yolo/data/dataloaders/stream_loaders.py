@@ -1,5 +1,12 @@
 # Ultralytics YOLO 🚀, AGPL-3.0 license
 
+import os
+import sys
+
+# Add the project root to the Python path
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.insert(0, project_root)
+
 import glob
 import math
 import os
@@ -15,9 +22,9 @@ import requests
 import torch
 from PIL import Image
 
-from ...yolo.data.utils import IMG_FORMATS, VID_FORMATS
-from ...yolo.utils import LOGGER, ROOT, is_colab, is_kaggle, ops
-from ...yolo.utils.checks import check_requirements
+from yolo.data.utils import IMG_FORMATS, VID_FORMATS
+from yolo.utils import LOGGER, ROOT, is_colab, is_kaggle, ops
+from yolo.utils.checks import check_requirements
 
 
 @dataclass

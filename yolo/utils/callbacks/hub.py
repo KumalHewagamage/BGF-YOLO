@@ -1,11 +1,18 @@
 # Ultralytics YOLO 🚀, AGPL-3.0 license
 
+import os
+import sys
+
+# Add the project root to the Python path
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.insert(0, project_root)
+
 import json
 from time import time
 
-from ultralytics.hub.utils import PREFIX, events
-from ultralytics.yolo.utils import LOGGER
-from ultralytics.yolo.utils.torch_utils import get_flops, get_num_params
+from hub.utils import PREFIX, events
+from yolo.utils import LOGGER
+from yolo.utils.torch_utils import get_flops, get_num_params
 
 
 def on_pretrain_routine_end(trainer):
