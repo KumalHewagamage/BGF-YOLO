@@ -176,7 +176,7 @@ def train(cfg=DEFAULT_CFG, use_python=False):
         data=data, 
         device=device,
         project="runs/detect",      # Main folder (default: "runs/detect")
-        name="my_experiment_v1",    # Subfolder name (default: "train", "train2", etc.)
+        name="improved_bfg_run2",    # Subfolder name (default: "train", "train2", etc.)
         exist_ok=False              # Set True to overwrite existing folder
     )
     if use_python:

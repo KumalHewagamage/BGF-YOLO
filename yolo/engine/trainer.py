@@ -15,6 +15,7 @@ sys.path.insert(0, project_root)
 import os
 import subprocess
 import time
+import json
 from copy import deepcopy
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -27,6 +28,13 @@ from torch.cuda import amp
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.optim import lr_scheduler
 from tqdm import tqdm
+
+# TensorBoard import (delayed to prevent auto-start)
+try:
+    from torch.utils.tensorboard import SummaryWriter
+    TENSORBOARD_AVAILABLE = True
+except ImportError:
+    TENSORBOARD_AVAILABLE = False
 
 from nn.tasks import attempt_load_one_weight, attempt_load_weights
 from yolo.cfg import get_cfg
@@ -148,6 +156,20 @@ class BaseTrainer:
         self.loss_names = ['Loss']
         self.csv = self.save_dir / 'results.csv'
         self.plot_idx = [0, 1, 2]
+        
+        # TensorBoard writer (initialize but don't auto-start dashboard)
+        self.tb_writer = None
+        if RANK in (-1, 0) and TENSORBOARD_AVAILABLE:
+            # Set environment variable to prevent auto-launching dashboard
+            os.environ['TENSORBOARD_BINARY'] = ''
+            tb_log_dir = self.save_dir / 'tensorboard'
+            tb_log_dir.mkdir(parents=True, exist_ok=True)
+            self.tb_writer = SummaryWriter(log_dir=str(tb_log_dir))
+            LOGGER.info(f'TensorBoard: logging to {tb_log_dir}')
+            LOGGER.info(f'TensorBoard: Run "tensorboard --logdir {self.save_dir.parent}" to view logs')
+        
+        # Best metrics tracker
+        self.best_metrics = {}
 
         # Callbacks
         self.callbacks = _callbacks or callbacks.get_default_callbacks()
@@ -403,6 +425,15 @@ class BaseTrainer:
             self.final_eval()
             if self.args.plots:
                 self.plot_metrics()
+            
+            # Save summary metrics log
+            self.save_summary_log()
+            
+            # Close TensorBoard writer
+            if self.tb_writer is not None:
+                self.tb_writer.close()
+                LOGGER.info(f'TensorBoard logs saved to {self.save_dir / "tensorboard"}')
+            
             self.run_callbacks('on_train_end')
         torch.cuda.empty_cache()
         self.run_callbacks('teardown')
@@ -533,16 +564,106 @@ class BaseTrainer:
         pass
 
     def save_metrics(self, metrics):
-        """Saves training metrics to a CSV file."""
+        """Saves training metrics to a CSV file and TensorBoard."""
         keys, vals = list(metrics.keys()), list(metrics.values())
         n = len(metrics) + 1  # number of cols
         s = '' if self.csv.exists() else (('%23s,' * n % tuple(['epoch'] + keys)).rstrip(',') + '\n')  # header
         with open(self.csv, 'a') as f:
             f.write(s + ('%23.5g,' * n % tuple([self.epoch] + vals)).rstrip(',') + '\n')
+        
+        # Log to TensorBoard
+        if self.tb_writer is not None:
+            for key, val in metrics.items():
+                if isinstance(val, (int, float)):
+                    # Organize metrics into categories
+                    if 'loss' in key.lower():
+                        self.tb_writer.add_scalar(f'Loss/{key}', val, self.epoch)
+                    elif 'lr' in key.lower():
+                        self.tb_writer.add_scalar(f'Learning_Rate/{key}', val, self.epoch)
+                    elif any(metric in key.lower() for metric in ['precision', 'recall', 'map', 'f1']):
+                        self.tb_writer.add_scalar(f'Metrics/{key}', val, self.epoch)
+                    else:
+                        self.tb_writer.add_scalar(f'Other/{key}', val, self.epoch)
+        
+        # Track best metrics
+        if hasattr(self, 'fitness') and self.fitness is not None:
+            if not self.best_metrics or self.fitness > self.best_metrics.get('fitness', 0):
+                self.best_metrics = {
+                    'epoch': self.epoch,
+                    'fitness': self.fitness,
+                    **{k: v for k, v in metrics.items() if isinstance(v, (int, float))}
+                }
 
     def plot_metrics(self):
         """Plot and display metrics visually."""
         pass
+    
+    def save_summary_log(self):
+        """Save a comprehensive summary log of training metrics."""
+        summary_file = self.save_dir / 'training_summary.txt'
+        json_file = self.save_dir / 'training_summary.json'
+        
+        # Training info
+        training_time = (time.time() - self.train_time_start) / 3600
+        
+        # Prepare summary data
+        summary_data = {
+            'training_info': {
+                'model': str(self.args.model),
+                'data': str(self.args.data),
+                'epochs_completed': self.epoch + 1,
+                'total_epochs': self.epochs,
+                'training_time_hours': round(training_time, 3),
+                'device': str(self.device),
+                'batch_size': self.batch_size,
+                'image_size': self.args.imgsz,
+            },
+            'best_metrics': self.best_metrics if self.best_metrics else {},
+            'final_metrics': {
+                'fitness': float(self.fitness) if self.fitness is not None else None,
+                **{k: float(v) if isinstance(v, (int, float, np.number)) else v 
+                   for k, v in self.metrics.items() if self.metrics}
+            } if hasattr(self, 'metrics') and self.metrics else {},
+        }
+        
+        # Save as JSON
+        with open(json_file, 'w') as f:
+            json.dump(summary_data, f, indent=2)
+        
+        # Save as human-readable text
+        with open(summary_file, 'w') as f:
+            f.write('='*80 + '\n')
+            f.write('TRAINING SUMMARY\n')
+            f.write('='*80 + '\n\n')
+            
+            f.write('TRAINING CONFIGURATION:\n')
+            f.write('-'*80 + '\n')
+            for key, val in summary_data['training_info'].items():
+                f.write(f'{key:.<30} {val}\n')
+            
+            if self.best_metrics:
+                f.write('\n' + '='*80 + '\n')
+                f.write('BEST METRICS (Epoch {}):\n'.format(self.best_metrics.get('epoch', 'N/A')))
+                f.write('='*80 + '\n')
+                for key, val in self.best_metrics.items():
+                    if key != 'epoch' and isinstance(val, (int, float)):
+                        f.write(f'{key:.<30} {val:.6f}\n')
+            
+            if summary_data['final_metrics']:
+                f.write('\n' + '='*80 + '\n')
+                f.write('FINAL METRICS:\n')
+                f.write('='*80 + '\n')
+                for key, val in summary_data['final_metrics'].items():
+                    if isinstance(val, (int, float)):
+                        f.write(f'{key:.<30} {val:.6f}\n')
+            
+            f.write('\n' + '='*80 + '\n')
+            f.write(f'Saved to: {self.save_dir}\n')
+            f.write(f'Best weights: {self.best}\n')
+            f.write(f'Last weights: {self.last}\n')
+            f.write('='*80 + '\n')
+        
+        LOGGER.info(f'Training summary saved to {summary_file} and {json_file}')
 
     def on_plot(self, name, data=None):
         """Registers plots (e.g. to be consumed in callbacks)"""
