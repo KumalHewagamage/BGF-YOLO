@@ -2,5 +2,17 @@
 /bgf_yolo.egg-info
 /runs
 
-#ignore all pycache files
+# Python cache files
+__pycache__/
+*/__pycache__/
 **/__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+
+# Distribution / packaging
+*.egg-info/
+dist/
+build/
+
