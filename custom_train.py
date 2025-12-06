@@ -171,14 +171,7 @@ def train(cfg=DEFAULT_CFG, use_python=False):
     # device = cfg.device if cfg.device is not None else ""
 
     device = 0
-    args = dict(
-        model=model, 
-        data=data, 
-        device=device,
-        project="runs/detect",      # Main folder (default: "runs/detect")
-        name="improved_bfg_run2",    # Subfolder name (default: "train", "train2", etc.)
-        exist_ok=False              # Set True to overwrite existing folder
-    )
+    args = dict(model=model, data=data, device=device)
     if use_python:
         from ultralytics import YOLO
 
