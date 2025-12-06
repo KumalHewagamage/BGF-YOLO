@@ -1,0 +1,5 @@
+train: /home/avishka/kumal/repo/BGF-YOLO/data/brats_2021_yolo/t2/train
+val: /home/avishka/kumal/repo/BGF-YOLO/data/brats_2021_yolo/t2/test
+
+nc: 1
+names: ['Brain tumor']

@@ -167,11 +167,18 @@ class DetectionTrainer(BaseTrainer):
 def train(cfg=DEFAULT_CFG, use_python=False):
     """Train and optimize YOLO model given training data and device."""
     model = "models/bgf/yolov8-improved.yaml" #cfg.model or "yolov8x.pt"
-    data = cfg.data or "coco.yaml"  # or yolo.ClassificationDataset("mnist")
+    data = "datasets/brats_yolo_t1.yaml" #cfg.data or "coco.yaml"  # or yolo.ClassificationDataset("mnist")
     # device = cfg.device if cfg.device is not None else ""
 
     device = 0
-    args = dict(model=model, data=data, device=device)
+    args = dict(
+        model=model, 
+        data=data, 
+        device=device,
+        project="runs/detect",      # Main folder (default: "runs/detect")
+        name="improved_bfg_t1",    # Subfolder name (default: "train", "train2", etc.)
+        exist_ok=False              # Set True to overwrite existing folder
+    )
     if use_python:
         from ultralytics import YOLO
 

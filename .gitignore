@@ -1,7 +1,7 @@
 /Br35H
 /bgf_yolo.egg-info
 /runs
-
+/data
 # Python cache files
 __pycache__/
 */__pycache__/
