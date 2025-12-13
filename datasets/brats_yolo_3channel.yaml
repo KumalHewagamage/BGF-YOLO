@@ -1,0 +1,13 @@
+# BraTS 2021 3-Channel Fused Dataset Configuration for YOLO
+# Early fusion: t1ce + flair + t2 as RGB channels
+
+train: /home/avishka/kumal/repo/BGF-YOLO/data/brats_2021_yolo_3channel/train
+val: /home/avishka/kumal/repo/BGF-YOLO/data/brats_2021_yolo_3channel/test
+
+nc: 1  # number of classes
+names: ['Brain tumor']  # class names
+
+# Channel mapping (for reference):
+# R (Red):   t1ce   - T1-weighted contrast-enhanced
+# G (Green): flair  - Fluid Attenuated Inversion Recovery
+# B (Blue):  t2     - T2-weighted

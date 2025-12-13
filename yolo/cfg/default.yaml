@@ -8,8 +8,8 @@ mode: train  # YOLO mode, i.e. train, val, predict, export, track, benchmark
 model: bgf-yolo.yaml  # path to model file, i.e. yolov8n.pt, yolov8n.yaml
 test_model: #"D:\\BGF-YOLO\\yolo\\bgf\\detect\\runs\\detect\\train\\weights\\best.pt"
 data: 'br35h.yaml' # path to data file, i.e. coco128.yaml
-epochs: 120  # number of epochs to train for
-patience: 50  # epochs to wait for no observable improvement for early stopping of training
+epochs: 200  # number of epochs to train for
+patience: 200  # epochs to wait for no observable improvement for early stopping of training
 batch: 1  # number of images per batch (-1 for AutoBatch)
 imgsz: 640  # size of input images as integer or w,h
 save: True  # save train checkpoints and predict results
@@ -23,7 +23,7 @@ exist_ok: False  # whether to overwrite existing experiment
 pretrained: False  # whether to use a pretrained model
 optimizer: SGD  # optimizer to use, choices=['SGD', 'Adam', 'AdamW', 'RMSProp']
 verbose: True  # whether to print verbose output
-seed: 0  # random seed for reproducibility
+seed: 30  # random seed for reproducibility
 deterministic: True  # whether to enable deterministic mode
 single_cls: False  # train multi-class data as single-class
 rect: False  # rectangular training if mode='train' or rectangular validation if mode='val'
