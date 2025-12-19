@@ -83,6 +83,35 @@ class DetectionTrainer(BaseTrainer):
     def preprocess_batch(self, batch):
         """Preprocesses a batch of images by scaling and converting to float."""
         batch["img"] = batch["img"].to(self.device, non_blocking=True).float() / 255
+        
+        # Channel dropout augmentation during training
+        dropout_prob = getattr(self.args, 'channel_dropout_prob', 0.0)
+        if self.model.training and dropout_prob > 0:
+            import torch
+            B, C, H, W = batch["img"].shape
+            if C == 3:  # Only apply to 3-channel images
+                # For each sample: with probability dropout_prob, choose a random channel to zero
+                # Generate random values [0, 1) for each sample
+                rand_vals = torch.rand(B, device=batch["img"].device)
+                
+                # Samples where rand < dropout_prob will have a channel dropped
+                apply_dropout = rand_vals < dropout_prob
+                
+                # For samples with dropout, randomly pick channel 0, 1, or 2
+                dropout_channels = torch.randint(0, 3, (B,), device=batch["img"].device)
+                
+                # Create mask: (B, C, 1, 1) initialized to all 1s
+                mask = torch.ones(B, C, 1, 1, device=batch["img"].device)
+                
+                # Zero out the selected channel for samples where apply_dropout is True
+                for c in range(3):
+                    # Set mask to 0 where: apply_dropout=True AND dropout_channels=c
+                    should_zero = apply_dropout & (dropout_channels == c)
+                    mask[:, c, 0, 0] = torch.where(should_zero, 0.0, 1.0)
+                
+                # Apply vectorized masking
+                batch["img"] = batch["img"] * mask
+        
         return batch
 
     def set_model_attributes(self):
@@ -166,17 +195,21 @@ class DetectionTrainer(BaseTrainer):
 
 def train(cfg=DEFAULT_CFG, use_python=False):
     """Train and optimize YOLO model given training data and device."""
-    model = "models/bgf/yolov8-improved.yaml" #cfg.model or "yolov8x.pt"
-    data = "datasets/brats_multiclass_t2.yaml" #cfg.data or "coco.yaml"  # or yolo.ClassificationDataset("mnist")
+    model = cfg.model or "yolov8x.pt"
+    data = "datasets/brats_yolo_3channel.yaml" #"datasets/brats_yolo_t2.yaml" #cfg.data or "coco.yaml"  # or yolo.ClassificationDataset("mnist")
     # device = cfg.device if cfg.device is not None else ""
 
     device = 0
+    
+    # Custom augmentation parameter (not part of YOLO's default config)
+    channel_dropout_prob = 0.35  # 0.0 to disable, 0.3 = 30% chance per image
+    
     args = dict(
         model=model, 
         data=data, 
         device=device,
         project="runs/detect",      # Main folder (default: "runs/detect")
-        name="improved_bfg_t2_multiclass",    # Subfolder name (default: "train", "train2", etc.)
+        name="baseline_three_channel_400_ep_chndrp_0.35",    # Subfolder name (default: "train", "train2", etc.)
         exist_ok=False              # Set True to overwrite existing folder
     )
     if use_python:
@@ -185,6 +218,8 @@ def train(cfg=DEFAULT_CFG, use_python=False):
         YOLO(model).train(**args)
     else:
         trainer = DetectionTrainer(overrides=args)
+        # Add custom parameter after initialization (bypass config validation)
+        trainer.args.channel_dropout_prob = channel_dropout_prob
         trainer.train()
 
 

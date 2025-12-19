@@ -1,0 +1,5 @@
+train: /home/avishka/kumal/repo/BGF-YOLO/data/brats_yolo_multiclass_v2/images/train
+val: /home/avishka/kumal/repo/BGF-YOLO/data/brats_yolo_multiclass_v2/images/val
+
+nc: 3  # number of classes
+names: ['Whole_Tumor', 'Tumor_Core', 'Enhancing_Tumor']

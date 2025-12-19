@@ -1,0 +1,10 @@
+# BraTS 2021 Multi-class Dataset - T1 modality
+# 3 classes: Whole Tumor (WT), Necrotic Core (NC), Enhancing Tumor (ET)
+
+train: /home/avishka/kumal/repo/BGF-YOLO/data/brats_yolo_multiclass_separate_channels/t1/images/train
+val: /home/avishka/kumal/repo/BGF-YOLO/data/brats_yolo_multiclass_separate_channels/t1/images/val
+
+nc: 3
+names: ['Whole Tumor', 'Necrotic Core', 'Enhancing Tumor']
+
+# Modality: T1-weighted (anatomical structure, gray/white matter contrast)

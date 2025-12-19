@@ -1,0 +1,10 @@
+# BraTS 2021 Multi-class Dataset - FLAIR modality
+# 3 classes: Whole Tumor (WT), Necrotic Core (NC), Enhancing Tumor (ET)
+
+train: /home/avishka/kumal/repo/BGF-YOLO/data/brats_yolo_multiclass_separate_v2/flair/images/train
+val: /home/avishka/kumal/repo/BGF-YOLO/data/brats_yolo_multiclass_separate_v2/flair/images/val
+
+nc: 3
+names: ['Whole Tumor', 'Necrotic Core', 'Enhancing Tumor']
+
+# Modality: FLAIR (Fluid Attenuated Inversion Recovery - best for edema/lesions)
