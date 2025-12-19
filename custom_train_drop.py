@@ -195,33 +195,55 @@ class DetectionTrainer(BaseTrainer):
 
 def train(cfg=DEFAULT_CFG, use_python=False):
     """Train and optimize YOLO model given training data and device."""
-    model = "models/bgf/yolov8-improved.yaml" #cfg.model or "yolov8x.pt"
-    data = "datasets/brats_yolo_multiclass.yaml" #"datasets/brats_yolo_t2.yaml" #cfg.data or "coco.yaml"  # or yolo.ClassificationDataset("mnist")
-    # device = cfg.device if cfg.device is not None else ""
-
+    model = "models/bgf/yolov8-improved.yaml" 
+    data = "datasets/brats_yolo_multiclass.yaml" 
+    
     device = 0
     
-    # Custom augmentation parameter (not part of YOLO's default config)
-    channel_dropout_prob = 0.35  # 0.0 to disable, 0.3 = 30% chance per image
+    # --- MODIFICATION 1: Lower Dropout ---
+    # Reduced from 0.35 to 0.15. 
+    # We want to keep the strong T1ce signal more often to help mAP@50.
+    channel_dropout_prob = 0.15  
     
     args = dict(
         model=model, 
         data=data, 
         device=device,
-        project="runs/detect",      # Main folder (default: "runs/detect")
-        name="improved_bfg_three_channel_multiclass_v2",    # Subfolder name (default: "train", "train2", etc.)
-        exist_ok=False              # Set True to overwrite existing folder
+        project="runs/detect",      
+        name="improved_bfg_three_channel_multiclass_v2_modified",
+        exist_ok=False,
+        
+        # --- MODIFICATION 2: Hyperparameter Tuning for mAP@50 ---
+        # 1. Increase class loss gain (default is usually 0.5). 
+        #    Helps model focus on "finding" the object (Recall).
+        cls=1.0,  
+        
+        # 2. Increase objectness loss gain (if using v8, this is implicit in dfl/box).
+        #    For V8, we can tune 'box' gain to ensure tight boxes (maintain high mAP@50-95)
+        #    while boosting 'cls' for detection.
+        box=7.5,  # Default is 7.5, keep high to preserve your good mAP@50-95
+        
+        # 3. Learning Rate Warmup
+        #    Give the 3-channel weights time to align before aggressive updates.
+        warmup_epochs=5.0, 
+        
+        # 4. Mosaic Augmentation
+        #    Ensure this is ON to help finding small objects.
+        mosaic=1.0, 
     )
+    
     if use_python:
         from ultralytics import YOLO
-
-        YOLO(model).train(**args)
+        # Note: You need to pass custom args to the model trainer wrapper if using python lib
+        model_instance = YOLO(model)
+        # Inject the custom dropout param into the trainer if possible, 
+        # or use the custom class below.
+        model_instance.train(**args)
     else:
         trainer = DetectionTrainer(overrides=args)
-        # Add custom parameter after initialization (bypass config validation)
+        # Apply the custom dropout parameter
         trainer.args.channel_dropout_prob = channel_dropout_prob
         trainer.train()
-
 
 if __name__ == "__main__":
     train()
